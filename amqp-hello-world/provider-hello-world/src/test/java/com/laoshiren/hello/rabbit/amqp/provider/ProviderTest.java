@@ -5,11 +5,7 @@ import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit4.SpringRunner;
 
-import javax.annotation.Resource;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
@@ -25,12 +21,11 @@ import java.util.concurrent.TimeoutException;
  * Date:            2020/10/3 17:39
  * Version:         1.0.0
  */
-@SpringBootTest
-@RunWith(SpringRunner.class)
+
 public class ProviderTest {
 
-    @Resource
-    public ObjectMapper objectMapper;
+    // 没有映入spring boot starter web 只能自己new
+    public ObjectMapper objectMapper = new ObjectMapper();
 
     @Test
     public void testSendMessage() throws IOException, TimeoutException {
