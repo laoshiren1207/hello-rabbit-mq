@@ -29,6 +29,7 @@
         <module>dependencies</module>
         <module>hello-commons</module>
         <module>amqp-hello-world</module>
+        <module>amqp-work-queues</module>
     </modules>
 
     <properties>

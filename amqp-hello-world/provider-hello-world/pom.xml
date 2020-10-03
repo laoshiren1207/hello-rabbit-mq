@@ -27,7 +27,6 @@
             <scope>test</scope>
         </dependency>
 
-
         <!-- rabbit-mq start -->
         <dependency>
             <groupId>com.rabbitmq</groupId>
