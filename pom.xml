@@ -30,6 +30,7 @@
         <module>hello-commons</module>
         <module>amqp-hello-world</module>
         <module>amqp-work-queues</module>
+        <module>amqp-publish-subscribe</module>
     </modules>
 
     <properties>
