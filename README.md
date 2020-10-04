@@ -58,3 +58,68 @@ services:
 
 #### provider
 
+#### consumer
+
+### amqp-work-queues
+
+`Work Queues`任务模型也被称为`Task Queues`。当消息处理比较耗时的时候，可能产生的消息的速度远大于消耗消息的速度。长此以往消息就会堆积越来越多无法处理，此时就可以用`work`模型：**让多个消费者绑定一个队列，共同消费队列中的消息。**队列中的消息一旦被消费就会消失，因此任务是并不会被重复执行的。
+
+![在这里插入图片描述](https://img-blog.csdnimg.cn/20201004221906353.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjEyNjQ2OA==,size_16,color_FFFFFF,t_70#pic_center)
+
+`rabbitmq`在`work`模式默认是顺序的将消息发给消费者，平均每个消费者消费消息的数量是一致的。**处理速度不一致也会导致消息堆积。**
+
+#### provider
+
+#### consumer
+
+**能者多劳**：消息确认机制
+
+~~~java
+// 第二个参数 表示消息自动确认 autoAck
+channel.basicConsume("amqp-work-queue",true,new DefaultConsumer(channel) {
+      // body 表示消息队列取出的消息体
+      @SneakyThrows
+      @Override
+      public void handleDelivery(String consumerTag, Envelope envelope, AMQP.BasicProperties properties, byte[] body) throws IOException {
+          Thread.sleep(5000);
+          System.out.println("slow-consumer-1");
+          String json =  new String(body);
+          System.out.println(json);
+      }
+  });
+~~~
+
+消费者获取100个消息，当消费到第3个的时候消费者下线了，消息就会丢失98个。所以就需要设置`autoAck`设置为`false`。
+
+`Unacked`表示未被确认的消息
+
+![在这里插入图片描述](https://img-blog.csdnimg.cn/20201004230819656.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjEyNjQ2OA==,size_16,color_FFFFFF,t_70#pic_center)
+
+~~~java
+Channel channel = connection.createChannel();
+// 一次只消费一个消息
+channel.basicQos(1);
+// 必须和发送端一直，不然就会新建一个channel
+channel.queueDeclare("amqp-work-queue",true,false,false,null);
+// 1 待消费的队列名称
+// 2 开始消息的自动确认机制 true 表示自动确认 
+// 3 消费的回调接口
+channel.basicConsume("amqp-work-queue",false,new DefaultConsumer(channel) {
+    // body 表示消息队列取出的消息体
+    @SneakyThrows
+    @Override
+    public void handleDelivery(String consumerTag, Envelope envelope, AMQP.BasicProperties properties, byte[] body) throws IOException {
+        Thread.sleep(1000);
+        System.out.println("slow-consumer-1");
+        String json =  new String(body);
+        System.out.println(json);
+        // 手动确认消息
+        // 1 确认队列中具体消息
+        // 2 是否开启多个消息同时确认
+        channel.basicAck(envelope.getDeliveryTag(),false);
+    }
+});
+~~~
+
+### amqp-publish-subscribe
+

@@ -19,6 +19,18 @@
 
     <dependencies>
 
+        <!-- rabbit-mq start -->
+        <dependency>
+            <groupId>com.rabbitmq</groupId>
+            <artifactId>amqp-client</artifactId>
+        </dependency>
+
+        <!-- project start -->
+        <dependency>
+            <groupId>com.laoshiren.hello.rabbit</groupId>
+            <artifactId>hello-commons</artifactId>
+            <version>${project.version}</version>
+        </dependency>
 
     </dependencies>
 
