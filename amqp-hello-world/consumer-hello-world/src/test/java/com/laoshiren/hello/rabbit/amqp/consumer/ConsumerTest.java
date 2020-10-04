@@ -34,7 +34,7 @@ public class ConsumerTest {
         // 创建通道
         Channel channel = connection.createChannel();
         // 必须和发送端一直，不然就会新建一个channel
-        channel.queueDeclare("amqp-hello-queue",false,false,false,null);
+        channel.queueDeclare("amqp-hello-queue",true,false,false,null);
         // 1 待消费的队列名称
         // 2 开始消息的自动确认机制
         // 3 消费的回调接口

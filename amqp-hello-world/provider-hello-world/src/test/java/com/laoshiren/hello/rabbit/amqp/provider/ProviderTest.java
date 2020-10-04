@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
+import com.rabbitmq.client.MessageProperties;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -44,11 +45,11 @@ public class ProviderTest {
         Channel channel = connection.createChannel();
         // chanel 绑定消息队列
         // 1. queue 队列名字，队列不存在自动创建
-        // 2. durable 队列是否持久化
+        // 2. durable 队列是否持久化 true 表示持久化
         // 3. exclusive 是否独占
         // 4. autoDelete 是否在消费完成之后自动删除队列
         // 5. 额外参数
-        channel.queueDeclare("amqp-hello-queue",false,false,false,null);
+        channel.queueDeclare("amqp-hello-queue",true,false,false,null);
 
         Map<String,Object> objectMap = new HashMap<>();
         objectMap.put("key","value");
@@ -56,9 +57,9 @@ public class ProviderTest {
         // 发布消息
         // 1.交换机名称，没有传递空字符串
         // 2.指定队列
-        // 3.传递参数
+        // 3.传递参数 MessageProperties.PERSISTENT_TEXT_PLAIN 表示持久化消息
         // 4.消息对象
-        channel.basicPublish("","amqp-hello-queue",null,json.getBytes());
+        channel.basicPublish("","amqp-hello-queue",MessageProperties.PERSISTENT_TEXT_PLAIN,json.getBytes());
         // 关闭通道
         channel.close();
         // 关闭连接
