@@ -20,7 +20,6 @@
 
 生产者会发送`key`和数据到`Broker`，由`Broker`比较`key`之后决定给哪个消费者。而`Rabbit MQ`是轻`topic`的代表，由`Broker`计算出`Key`对应的队列然后把数据交给队列。
 
-![](C:\Users\Administrator\Desktop\rabbit mq\轻topic.png)
 
 ## 2  RabbitMQ 的安装
 
@@ -48,11 +47,11 @@ services:
 
 ### 2.1 web管理界面
 
-![](C:\Users\Administrator\Desktop\rabbit mq\0001.png)
+![](https://img-blog.csdnimg.cn/20201005211144878.png)
 
 ## 3 RabbitMQ 的使用
 
-![](C:\Users\Administrator\Desktop\rabbit mq\0002.png)
+![](https://img-blog.csdnimg.cn/20201005211209403.png)
 
 ### amqp-hello-world
 
