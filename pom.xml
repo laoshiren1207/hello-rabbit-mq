@@ -28,9 +28,14 @@
     <modules>
         <module>dependencies</module>
         <module>hello-commons</module>
+        <!--直连队列发送-->
         <module>amqp-hello-world</module>
+        <!-- work queue 模式 -->
         <module>amqp-work-queues</module>
+        <!-- 广播模式 fanout-->
         <module>amqp-publish-subscribe</module>
+        <!-- 路由模式 routing -->
+        <module>amqp-routing</module>
     </modules>
 
     <properties>
