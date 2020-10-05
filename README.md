@@ -132,11 +132,24 @@ channel.basicConsume("amqp-hello-queue",true,new DefaultConsumer(channel) {
 
 ### 3.2 任务模式 work-queues
 
-`Work Queues`任务模型也被称为`Task Queues`。当消息处理比较耗时的时候，可能产生的消息的速度远大于消耗消息的速度。长此以往消息就会堆积越来越多无法处理，此时就可以用`work`模型：**让多个消费者绑定一个队列，共同消费队列中的消息。**队列中的消息一旦被消费就会消失，因此任务是并不会被重复执行的。
+`Work Queues`任务模型也被称为`Task Queues`。当消息处理比较耗时的时候，可能产生的消息的速度远大于消耗消息的速度。长此以往消息就会堆积越来越多无法处理，此时就可以用`work`模型：**让多个消费者绑定一个队列，共同消费队列中的消息** 。队列中的消息一旦被消费就会消失，因此任务是并不会被重复执行的。
 
 ![](https://www.rabbitmq.com/img/tutorials/python-two.png)
 
 #### provider
+
+~~~java
+Channel channel = connection.createChannel();
+// 定义队列
+channel.queueDeclare("amqp-work-queue",true,false,false,null);
+// 生产多个消息
+for (int i = 0; i < 200 ; i++) {
+    Map<String,Object> objectMap = new HashMap<>();
+    objectMap.put("key "+i,"value "+i);
+    String jsonStr = objectMapper.writeValueAsString(objectMap);
+    channel.basicPublish("","amqp-work-queue",null,jsonStr.getBytes());
+}
+~~~
 
 #### consumer
 
