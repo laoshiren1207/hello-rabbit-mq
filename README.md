@@ -183,9 +183,59 @@ channel.basicConsume(queueName,true,new DefaultConsumer(channel) {
 
 #### 3.4.1 路由直连 Direct
 
-在`fanout`模型中，一条消息会被所有订阅的队列消费。但是在某些场景下，我们希望不同的消息被不同的消息队列消费。这是就要用到`Direct`类型的`Exchange`。队列和交换机绑定，**必须指定一个**`RoutingKey`。消息的发送方在向`Exchange`发送消息的同时。**必须指定消息的**`RoutingKey`。`Exchange`不在把消息交给每一个绑定的队列，而是根据消息的`RoutingKey`进行判断，只有消息的`RoutingKey`与队列的`RoutingKey`完全一致才会接收到消息
+在`fanout`模型中，一条消息会被所有订阅的队列消费。但是在某些场景下，我们希望不同的消息被不同的消息队列消费。这是就要用到`Direct`类型的`Exchange`。队列和交换机绑定，**必须指定一个**`RoutingKey`。消息的发送方在向`Exchange`发送消息的同时。**必须指定消息的**`RoutingKey`。`Exchange`不在把消息交给每一个绑定的队列，而是根据消息的`RoutingKey`进行判断，只有消息的`RoutingKey`与队列的`RoutingKey`完全一致才会接收到消息。
+
+![](https://www.rabbitmq.com/img/tutorials/python-four.png)
 
 ##### provider
 
+~~~java
+// 获取通道
+Channel channel = connection.createChannel();
+// 设置交换机
+// BuiltinExchangeType.DIRECT 直连
+channel.exchangeDeclare("routing-direct-ex", BuiltinExchangeType.DIRECT,true);
+// 声明路由Key
+String routingKey = "routing Key 1";
+// 消息对象
+Map<String,Object> objectMap = new HashMap<>();
+objectMap.put("key",routingKey);
+objectMap.put("value","routing -- direct");
+String jsonStr = objectMapper.writeValueAsString(objectMap);
+// 消息生产者 指定路由Key
+channel.basicPublish("routing-direct-ex",routingKey,null,jsonStr.getBytes());
+~~~
+
 ##### consumer
+
+~~~java
+// 获取通道
+Channel channel = connection.createChannel();
+// 设置交换机
+channel.exchangeDeclare("routing-direct-ex", BuiltinExchangeType.DIRECT,true);
+// 路由key
+String routingKey1 = "routing Key 1";
+String routingKey2 = "routing Key 2";
+// 临时队列名
+String queueName = channel.queueDeclare().getQueue();
+// 绑定队列，使用路由key 一个channel 绑定2个队列
+channel.queueBind(queueName,"routing-direct-ex",routingKey1,null);
+channel.queueBind(queueName,"routing-direct-ex",routingKey2,null);
+
+channel.basicConsume(queueName,true,new DefaultConsumer(channel){
+    @Override
+    public void handleDelivery(String consumerTag,
+                               Envelope envelope,
+                               AMQP.BasicProperties properties,
+                               byte[] body)throws IOException{
+        System.out.print("consumer :  "+ envelope.getRoutingKey());
+        String json =  new String(body);
+        System.out.println(json);
+    }
+});
+~~~
+
+一个`channel`绑定多个队列，就类似上图的`C2`，不仅仅可以消费`info`，还可以消费`error`和`warning`的消息。
+
+![](https://img-blog.csdnimg.cn/20201005231503783.png)
 
