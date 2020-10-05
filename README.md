@@ -61,6 +61,8 @@ services:
 
 ![](https://img-blog.csdnimg.cn/20201005211234753.png)
 
+需要手动修改一下版本，不过以此项目不能直接在`dependencies`项目修改，需要在具体项目里进行修改`pom.xml`
+
 ~~~xml
 <properties>
     <rabbit-amqp-client.version>5.9.0</rabbit-amqp-client.version>
