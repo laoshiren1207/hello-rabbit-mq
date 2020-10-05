@@ -53,7 +53,7 @@ services:
 
 ![](https://img-blog.csdnimg.cn/20201005211209403.png)
 
-### amqp-hello-world
+### 3.1 直连模式 hello-world
 
 ![](https://www.rabbitmq.com/img/tutorials/python-one-overall.png)
 
@@ -61,17 +61,17 @@ services:
 
 #### consumer
 
-### amqp-work-queues
+### 3.2 任务模式 work-queues
 
 `Work Queues`任务模型也被称为`Task Queues`。当消息处理比较耗时的时候，可能产生的消息的速度远大于消耗消息的速度。长此以往消息就会堆积越来越多无法处理，此时就可以用`work`模型：**让多个消费者绑定一个队列，共同消费队列中的消息。**队列中的消息一旦被消费就会消失，因此任务是并不会被重复执行的。
 
 ![](https://www.rabbitmq.com/img/tutorials/python-two.png)
 
-`rabbitmq`在`work`模式默认是顺序的将消息发给消费者，平均每个消费者消费消息的数量是一致的。**处理速度不一致也会导致消息堆积。**
-
 #### provider
 
 #### consumer
+
+`rabbitmq`在`work`模式默认是顺序的将消息发给消费者，平均每个消费者消费消息的数量是一致的。**处理速度不一致也会导致消息堆积。**
 
 **能者多劳**：消息确认机制
 
@@ -122,7 +122,7 @@ channel.basicConsume("amqp-work-queue",false,new DefaultConsumer(channel) {
 });
 ~~~
 
-### amqp-publish-subscribe
+### 3.3 发布订阅模式 publish-subscribe
 
 `fanout`也被称为广播模式，在广播模式下，**每个消费者有自己的队列，每个队列都必须绑定到交换机上**（图中的`x`）。**生产者发送消息只能发送给交换机**，交换机来决定给某个队列，生产者无法决定。交换机将消息发送给绑定上的队列，所有消费者都能拿到消息，**实现一条消息被多个消费者消费**。
 
@@ -179,9 +179,13 @@ channel.basicConsume(queueName,true,new DefaultConsumer(channel) {
 
 ![](https://img-blog.csdnimg.cn/2020100516085385.png)
 
-### amqp-routing
+### 3.4 路由模式 amqp-routing
 
-#### provider
+#### 3.4.1 路由直连 Direct
 
-#### consumer
+在`fanout`模型中，一条消息会被所有订阅的队列消费。但是在某些场景下，我们希望不同的消息被不同的消息队列消费。这是就要用到`Direct`类型的`Exchange`。队列和交换机绑定，**必须指定一个**`RoutingKey`。消息的发送方在向`Exchange`发送消息的同时。**必须指定消息的**`RoutingKey`。`Exchange`不在把消息交给每一个绑定的队列，而是根据消息的`RoutingKey`进行判断，只有消息的`RoutingKey`与队列的`RoutingKey`完全一致才会接收到消息
+
+##### provider
+
+##### consumer
 

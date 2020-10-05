@@ -1,6 +1,7 @@
 package com.laoshiren.hello.rabbit.fanout.provider;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.laoshiren.hello.rabbit.commons.RabbitUtils;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
@@ -21,17 +22,11 @@ import java.util.concurrent.TimeoutException;
  */
 public class FanoutProvider {
 
-    public static void main(String[] args) throws IOException, TimeoutException {
+    public static void main(String[] args) throws Exception {
         ObjectMapper objectMapper = new ObjectMapper();
         // 常规设置
-        ConnectionFactory factory = new ConnectionFactory();
-        factory.setHost("120.79.0.210");
-        factory.setPort(5672);
-        factory.setVirtualHost("/");
-        factory.setUsername("rabbit");
-        factory.setPassword("123456");
 
-        Connection connection = factory.newConnection();
+        Connection connection = RabbitUtils.openConnection();
         Channel channel = connection.createChannel();
         // 将通道声明指定的交换机
         // 1 交换机的名称
@@ -46,8 +41,7 @@ public class FanoutProvider {
         // 3 消息额外参数（持久化）
         // 4 消息体
         channel.basicPublish("fanout-Ex","",null,json.getBytes());
-        channel.close();
-        connection.close();
+        RabbitUtils.closeResource(channel,connection);
     }
 
 }

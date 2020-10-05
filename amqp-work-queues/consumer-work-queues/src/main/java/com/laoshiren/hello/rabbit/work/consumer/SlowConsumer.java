@@ -1,5 +1,6 @@
 package com.laoshiren.hello.rabbit.work.consumer;
 
+import com.laoshiren.hello.rabbit.commons.RabbitUtils;
 import com.rabbitmq.client.AMQP;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
@@ -22,15 +23,8 @@ import java.io.IOException;
 public class SlowConsumer {
 
     public static void main(String[] args) throws Exception {
-        ConnectionFactory factory = new ConnectionFactory();
-        // 常规设置
-        factory.setHost("120.79.0.210");
-        factory.setPort(5672);
-        factory.setVirtualHost("/");
-        factory.setUsername("rabbit");
-        factory.setPassword("123456");
         // 创建新连接
-        Connection connection = factory.newConnection();
+        Connection connection = RabbitUtils.openConnection();
         // 创建通道
         Channel channel = connection.createChannel();
         // 一次只消费一个消息

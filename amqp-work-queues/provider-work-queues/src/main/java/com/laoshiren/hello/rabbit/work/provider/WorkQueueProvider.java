@@ -1,6 +1,7 @@
 package com.laoshiren.hello.rabbit.work.provider;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.laoshiren.hello.rabbit.commons.RabbitUtils;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
@@ -21,15 +22,9 @@ import java.util.concurrent.TimeoutException;
  */
 public class WorkQueueProvider {
 
-    public static void main(String[] args) throws IOException, TimeoutException {
+    public static void main(String[] args) throws Exception{
         ObjectMapper objectMapper = new ObjectMapper();
-        ConnectionFactory factory = new ConnectionFactory();
-        factory.setHost("120.79.0.210");
-        factory.setPort(5672);
-        factory.setVirtualHost("/");
-        factory.setUsername("rabbit");
-        factory.setPassword("123456");
-        Connection connection = factory.newConnection();
+        Connection connection = RabbitUtils.openConnection();
         Channel channel = connection.createChannel();
         // 定义队列
         channel.queueDeclare("amqp-work-queue",true,false,false,null);
@@ -40,8 +35,7 @@ public class WorkQueueProvider {
             String jsonStr = objectMapper.writeValueAsString(objectMap);
             channel.basicPublish("","amqp-work-queue",null,jsonStr.getBytes());
         }
-        channel.close();
-        connection.close();
+        RabbitUtils.closeResource(channel,connection);
     }
 
 }
