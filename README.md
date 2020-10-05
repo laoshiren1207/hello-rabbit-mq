@@ -57,9 +57,76 @@ services:
 
 ![](https://www.rabbitmq.com/img/tutorials/python-one-overall.png)
 
+项目采用的是`spring-boot-2.1.7RELEASE`版本，其对应的`rabbit-amqp-client`的版本是`<rabbit-amqp-client.version>5.4.3</rabbit-amqp-client.version>`。而`rabbitmq`官网上说现在的`RELEASE`版本是5.9.0。
+
+![](https://img-blog.csdnimg.cn/20201005211234753.png)
+
+~~~xml
+<properties>
+    <rabbit-amqp-client.version>5.9.0</rabbit-amqp-client.version>
+</properties>
+~~~
+
 #### provider
 
+~~~java
+// 链接MQ工厂
+ConnectionFactory factory = new ConnectionFactory();
+// 设置连接主机
+factory.setHost("120.79.0.210");
+factory.setPort(5672);
+// 设置虚拟主机，
+factory.setVirtualHost("/");
+factory.setUsername("rabbit");
+factory.setPassword("123456");
+// 获取连接
+Connection connection = factory.newConnection();
+// 获取通道 channel
+Channel channel = connection.createChannel();
+// chanel 绑定消息队列
+// 1. queue 队列名字，队列不存在自动创建
+// 2. durable 队列是否持久化 true 表示持久化
+// 3. exclusive 是否独占
+// 4. autoDelete 是否在消费完成之后自动删除队列
+// 5. 额外参数
+channel.queueDeclare("amqp-hello-queue",true,false,false,null);
+
+Map<String,Object> objectMap = new HashMap<>();
+objectMap.put("key","value");
+String json = objectMapper.writeValueAsString(objectMap);
+// 发布消息
+// 1.交换机名称，没有传递空字符串
+// 2.指定队列
+// 3.传递参数 MessageProperties.PERSISTENT_TEXT_PLAIN 表示持久化消息
+// 4.消息对象
+channel.basicPublish("","amqp-hello-queue",MessageProperties.PERSISTENT_TEXT_PLAIN,json.getBytes());
+// 关闭通道
+channel.close();
+// 关闭连接
+connection.close();
+~~~
+
 #### consumer
+
+~~~java
+// 创建新连接
+Connection connection = factory.newConnection();
+// 创建通道
+Channel channel = connection.createChannel();
+// 必须和发送端一直，不然就会新建一个channel
+channel.queueDeclare("amqp-hello-queue",true,false,false,null);
+// 1 待消费的队列名称
+// 2 开始消息的自动确认机制
+// 3 消费的回调接口
+channel.basicConsume("amqp-hello-queue",true,new DefaultConsumer(channel) {
+    // body 表示消息队列取出的消息体
+    @Override
+    public void handleDelivery(String consumerTag, Envelope envelope, AMQP.BasicProperties properties, byte[] body) throws IOException {
+        String json =  new String(body);
+        System.out.println(json);
+    }
+});
+~~~
 
 ### 3.2 任务模式 work-queues
 
@@ -179,15 +246,15 @@ channel.basicConsume(queueName,true,new DefaultConsumer(channel) {
 
 ![](https://img-blog.csdnimg.cn/2020100516085385.png)
 
-### 3.4 路由模式 amqp-routing
+### 3.4 路由模式 routing
 
-#### 3.4.1 路由直连 Direct
+#### 路由直连 Direct
 
 在`fanout`模型中，一条消息会被所有订阅的队列消费。但是在某些场景下，我们希望不同的消息被不同的消息队列消费。这是就要用到`Direct`类型的`Exchange`。队列和交换机绑定，**必须指定一个**`RoutingKey`。消息的发送方在向`Exchange`发送消息的同时。**必须指定消息的**`RoutingKey`。`Exchange`不在把消息交给每一个绑定的队列，而是根据消息的`RoutingKey`进行判断，只有消息的`RoutingKey`与队列的`RoutingKey`完全一致才会接收到消息。
 
 ![](https://www.rabbitmq.com/img/tutorials/python-four.png)
 
-##### provider
+#### provider
 
 ~~~java
 // 获取通道
@@ -206,7 +273,7 @@ String jsonStr = objectMapper.writeValueAsString(objectMap);
 channel.basicPublish("routing-direct-ex",routingKey,null,jsonStr.getBytes());
 ~~~
 
-##### consumer
+#### consumer
 
 ~~~java
 // 获取通道
@@ -238,4 +305,10 @@ channel.basicConsume(queueName,true,new DefaultConsumer(channel){
 一个`channel`绑定多个队列，就类似上图的`C2`，不仅仅可以消费`info`，还可以消费`error`和`warning`的消息。
 
 ![](https://img-blog.csdnimg.cn/20201005231503783.png)
+
+### 3.5 动态路由 topic
+
+#### provider
+
+#### consumer
 

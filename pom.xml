@@ -36,6 +36,8 @@
         <module>amqp-publish-subscribe</module>
         <!-- 路由模式 routing -->
         <module>amqp-routing</module>
+        <!-- topic 模式 -->
+        <module>amqp-topics</module>
     </modules>
 
     <properties>
