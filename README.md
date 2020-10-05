@@ -10,7 +10,7 @@
 
 消息队列采用 `FIFO` 的方式，即 先进先出 的数据结构。
 
-![](https://bkimg.cdn.bcebos.com/pic/8601a18b87d6277f8774fd792b381f30e924fc09?x-bce-process=image/watermark,image_d2F0ZXIvYmFpa2U2MA==,g_7,xp_5,yp_5)
+![](https://bkimg.cdn.bcebos.com/pic/8601a18b87d6277f8774fd792b381f30e924fc09)
 
 ### 1.2 消息队列类型
 
@@ -56,6 +56,8 @@ services:
 
 ### amqp-hello-world
 
+![](https://www.rabbitmq.com/img/tutorials/python-one-overall.png)
+
 #### provider
 
 #### consumer
@@ -64,7 +66,7 @@ services:
 
 `Work Queues`任务模型也被称为`Task Queues`。当消息处理比较耗时的时候，可能产生的消息的速度远大于消耗消息的速度。长此以往消息就会堆积越来越多无法处理，此时就可以用`work`模型：**让多个消费者绑定一个队列，共同消费队列中的消息。**队列中的消息一旦被消费就会消失，因此任务是并不会被重复执行的。
 
-![在这里插入图片描述](https://img-blog.csdnimg.cn/20201004221906353.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjEyNjQ2OA==,size_16,color_FFFFFF,t_70#pic_center)
+![](https://www.rabbitmq.com/img/tutorials/python-two.png)
 
 `rabbitmq`在`work`模式默认是顺序的将消息发给消费者，平均每个消费者消费消息的数量是一致的。**处理速度不一致也会导致消息堆积。**
 
@@ -93,7 +95,7 @@ channel.basicConsume("amqp-work-queue",true,new DefaultConsumer(channel) {
 
 `Unacked`表示未被确认的消息
 
-![在这里插入图片描述](https://img-blog.csdnimg.cn/20201004230819656.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MjEyNjQ2OA==,size_16,color_FFFFFF,t_70#pic_center)
+![](https://img-blog.csdnimg.cn/20201004230819656.png)
 
 ~~~java
 Channel channel = connection.createChannel();
@@ -122,4 +124,65 @@ channel.basicConsume("amqp-work-queue",false,new DefaultConsumer(channel) {
 ~~~
 
 ### amqp-publish-subscribe
+
+`fanout`也被称为广播模式，在广播模式下，**每个消费者有自己的队列，每个队列都必须绑定到交换机上**（图中的`x`）。**生产者发送消息只能发送给交换机**，交换机来决定给某个队列，生产者无法决定。交换机将消息发送给绑定上的队列，所有消费者都能拿到消息，**实现一条消息被多个消费者消费**。
+
+![](https://www.rabbitmq.com/img/tutorials/python-three-overall.png)
+
+#### provider
+
+~~~java
+Channel channel = connection.createChannel();
+// 将通道声明指定的交换机
+// 1 交换机的名称
+// 2 交换机的类型 fanout 表示广播类型
+channel.exchangeDeclare("fanout-Ex","fanout");
+// 发送消息
+Map<String,Object> objectMap = new HashMap<>();
+objectMap.put("key","fanout");
+String json = objectMapper.writeValueAsString(objectMap);
+// 1 交换机名称
+// 2 路由key,广播模式无须关心路由key
+// 3 消息额外参数（持久化）
+// 4 消息体
+channel.basicPublish("fanout-Ex","",null,json.getBytes());
+channel.close();
+connection.close();
+~~~
+
+![](https://img-blog.csdnimg.cn/20201005154235475.png)
+
+#### consumer
+
+~~~java
+Channel channel = connection.createChannel();
+// 绑定交换机
+channel.exchangeDeclare("fanout-Ex","fanout",true);
+// 临时队列名
+String queueName = channel.queueDeclare().getQueue();
+// 绑定队列和交换机
+channel.queueBind(queueName,"fanout-Ex","");
+// 消费消息
+channel.basicConsume(queueName,true,new DefaultConsumer(channel) {
+    // body 表示消息队列取出的消息体
+    @Override
+    public void handleDelivery(String consumerTag, Envelope envelope, AMQP.BasicProperties properties, byte[] body) throws IOException {
+        System.out.print("fanout-consumer-1 ");
+        String json =  new String(body);
+        System.out.println(json);
+    }
+});
+~~~
+
+![](https://img-blog.csdnimg.cn/20201005160615133.png)
+
+开启2个消费者，交换机收到一条消息会被2个消费者消费。
+
+![](https://img-blog.csdnimg.cn/2020100516085385.png)
+
+### amqp-routing
+
+#### provider
+
+#### consumer
 
