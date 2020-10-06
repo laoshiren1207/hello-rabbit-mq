@@ -600,6 +600,76 @@ public class FanoutConsumer {
 
 #### provider
 
+~~~java
+@Test
+public void runEmpty() throws Exception {
+    String exchangeName = "spring-routing-ex";
+    String routingKey = "laoshiren";
+    // String routingKey = "rabbit";
+    Map<String,Object> map = new HashMap<>();
+    map.put("key","spring-routing");
+    map.put("exchangeName",exchangeName);
+    map.put("routingKey",routingKey);
+    String jsonStr = objectMapper.writeValueAsString(map);
+    // 1. exchange 名
+    // 2 routing 模式必须跟上路由key
+    // 3 消息
+    rabbitTemplate.convertAndSend(exchangeName,routingKey,jsonStr);
+}
+~~~
+
+#### consumer
+
+第一个消费者只绑定一个`routingKey`，第二个消费者绑定多个`routingKey`。
+
+~~~java
+public class RoutingConsumer {
+
+    @RabbitListener(bindings = {
+            @QueueBinding(
+                    // 临时队列
+                    value = @Queue(),
+                    // 交换机 type 默认就是direct直连模式
+                    exchange = @Exchange(name = "spring-routing-ex",type = ExchangeTypes.DIRECT),
+                    // 路由Key,可以声明多个
+                    key = {"laoshiren"}
+            )
+    })
+    public void receiveMessageRouting1(String message){
+        log.info("routing 1 {}",message);
+    }
+
+    @RabbitListener(bindings = {
+            @QueueBinding(
+                    value = @Queue(),
+                    exchange = @Exchange(name = "spring-routing-ex",type = ExchangeTypes.DIRECT),
+                    key = {"laoshiren","rabbit"}
+            )
+    })
+    public void receiveMessageRouting2(String message){
+        log.info("routing 2 {}",message);
+    }
+
+}
+~~~
+
+日志输出
+
+~~~shell
+## 当路由key 为 laoshiren 时
+2020-10-06 23:19:44.920  INFO 21637 --- [ntContainer#1-1] c.l.h.r.s.r.consumer.RoutingConsumer     : routing 2 {"exchangeName":"spring-routing-ex","key":"spring-routing","routingKey":"laoshiren"}
+2020-10-06 23:19:44.920  INFO 21637 --- [ntContainer#0-1] c.l.h.r.s.r.consumer.RoutingConsumer     : routing 1 {"exchangeName":"spring-routing-ex","key":"spring-routing","routingKey":"laoshiren"}
+
+## 当路由key 为 rabbit 时
+2020-10-06 23:23:37.319  INFO 21725 --- [ntContainer#1-1] c.l.h.r.s.r.consumer.RoutingConsumer     : routing 2 {"exchangeName":"spring-routing-ex","key":"spring-routing","routingKey":"rabbit"}
+~~~
+
+### 4.5 spring-topic 
+
+依赖和配置文件其实是和`spring-hello-world`一致的。
+
+#### provider
+
 
 
 #### consumer

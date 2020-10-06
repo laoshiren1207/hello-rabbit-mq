@@ -20,6 +20,8 @@
         <module>spring-work-queues</module>
         <!-- 发布订阅者模式 fanout 模式 -->
         <module>spring-publish-subscribe</module>
+        <!-- 路由模式 routing -->
+        <module>spring-routing</module>
     </modules>
 
 </project>

@@ -1,0 +1,10 @@
+spring:
+  application:
+    name: spring-publish-subscribe
+  ## rabbit mq 基本设置
+  rabbitmq:
+    addresses: 120.79.0.210
+    port: 5672
+    username: rabbit
+    password: 123456
+    virtual-host: /
