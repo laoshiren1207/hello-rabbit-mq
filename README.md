@@ -432,7 +432,7 @@ spring:
     virtual-host: /
 ~~~
 
-##### provider
+#### provider
 
 消息生产者**不会主动创建队列**，只有消费者才会创建队列。
 
@@ -456,7 +456,7 @@ public void runEmpty() throws Exception {
 }
 ~~~
 
-##### consumer
+#### consumer
 
 默认创建的就是持久化非独占的队列。
 
@@ -485,5 +485,50 @@ public class HelloWorldConsumer {
     }
 
 }
+~~~
+
+### 4.2 spring-work-queues
+
+#### provider
+
+#### consumer
+
+模拟2个消费者消费
+
+~~~java
+@Component
+@Slf4j
+public class WorkConsumer {
+
+    @RabbitListener(queuesToDeclare = {@Queue("spring-work-queue")})
+    public void receiveMessageWork1(String message){
+        log.info("work1 {}",message);
+    }
+
+    @RabbitListener(queuesToDeclare = {@Queue("spring-work-queue")})
+    public void receiveMessageWork2(String message){
+        log.info("work2 {}",message);
+    }
+
+}
+~~~
+
+输出日志
+
+~~~shell
+2020-10-06 22:24:14.293  INFO 20066 --- [ntContainer#0-1] c.l.h.r.s.work.consumer.WorkConsumer     : work1 {"value":0,"key":"spring-work-queue"}
+2020-10-06 22:24:14.293  INFO 20066 --- [ntContainer#1-1] c.l.h.r.s.work.consumer.WorkConsumer     : work2 {"value":1,"key":"spring-work-queue"}
+2020-10-06 22:24:14.295  INFO 20066 --- [       Thread-2] o.s.a.r.l.SimpleMessageListenerContainer : Waiting for workers to finish.
+2020-10-06 22:24:14.296  INFO 20066 --- [ntContainer#0-1] c.l.h.r.s.work.consumer.WorkConsumer     : work1 {"value":2,"key":"spring-work-queue"}
+2020-10-06 22:24:14.296  INFO 20066 --- [ntContainer#1-1] c.l.h.r.s.work.consumer.WorkConsumer     : work2 {"value":3,"key":"spring-work-queue"}
+2020-10-06 22:24:14.296  INFO 20066 --- [ntContainer#0-1] c.l.h.r.s.work.consumer.WorkConsumer     : work1 {"value":4,"key":"spring-work-queue"}
+2020-10-06 22:24:14.296  INFO 20066 --- [ntContainer#1-1] c.l.h.r.s.work.consumer.WorkConsumer     : work2 {"value":5,"key":"spring-work-queue"}
+2020-10-06 22:24:14.296  INFO 20066 --- [ntContainer#0-1] c.l.h.r.s.work.consumer.WorkConsumer     : work1 {"value":6,"key":"spring-work-queue"}
+2020-10-06 22:24:14.296  INFO 20066 --- [ntContainer#1-1] c.l.h.r.s.work.consumer.WorkConsumer     : work2 {"value":7,"key":"spring-work-queue"}
+2020-10-06 22:24:14.296  INFO 20066 --- [ntContainer#0-1] c.l.h.r.s.work.consumer.WorkConsumer     : work1 {"value":8,"key":"spring-work-queue"}
+2020-10-06 22:24:14.297  INFO 20066 --- [ntContainer#1-1] c.l.h.r.s.work.consumer.WorkConsumer     : work2 {"value":9,"key":"spring-work-queue"}
+2020-10-06 22:24:14.297  INFO 20066 --- [ntContainer#0-1] c.l.h.r.s.work.consumer.WorkConsumer     : work1 {"value":10,"key":"spring-work-queue"}
+2020-10-06 22:24:14.297  INFO 20066 --- [ntContainer#1-1] c.l.h.r.s.work.consumer.WorkConsumer     : work2 {"value":11,"key":"spring-work-queue"}
+2020-10-06 22:24:14.297  INFO 20066 --- [ntContainer#0-1] c.l.h.r.s.work.consumer.WorkConsumer     : work1 {"value":12,"key":"spring-work-queue"}
 ~~~
 

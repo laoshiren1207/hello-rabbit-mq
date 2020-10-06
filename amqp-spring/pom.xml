@@ -14,7 +14,10 @@
     <packaging>pom</packaging>
 
     <modules>
+        <!-- hello-world -->
         <module>spring-hello-world</module>
+        <!-- work-queues 模式 -->
+        <module>spring-work-queues</module>
     </modules>
 
 </project>
