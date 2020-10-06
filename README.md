@@ -670,6 +670,58 @@ public class RoutingConsumer {
 
 #### provider
 
-
+~~~java
+@Test
+public void runEmpty() throws Exception {
+    String exchangeName = "spring-topic-ex";
+    String routingKey = "rabbit.laoshiren.1207";
+    Map<String,Object> map = new HashMap<>();
+    map.put("key","spring-topic");
+    map.put("exchangeName",exchangeName);
+    map.put("routingKey",routingKey);
+    String jsonStr = objectMapper.writeValueAsString(map);
+    // 1. exchange 名
+    // 2 routing 模式必须跟上路由key
+    // 3 消息
+    rabbitTemplate.convertAndSend(exchangeName,routingKey,jsonStr);
+}
+~~~
 
 #### consumer
+
+~~~java
+public class TopicConsumer {
+
+    @RabbitListener(bindings = {
+            @QueueBinding(
+                    value = @Queue(""),
+                    // 设置topic 类型的交换机
+                    exchange = @Exchange(name = "spring-topic-ex",type = ExchangeTypes.TOPIC),
+                    key = {"rabbit.#"}
+            )
+    })
+    public void receiveMessageTopic1(String message){
+        log.info("topic 1 {}",message);
+    }
+
+    @RabbitListener(bindings = {
+            @QueueBinding(
+                    value = @Queue(""),
+                    exchange = @Exchange(name = "spring-topic-ex",type = ExchangeTypes.TOPIC),
+                    key = {"*.laoshiren.*","#.1207"}
+            )
+    })
+    public void receiveMessageTopic2(String message){
+        log.info("topic 2 {}",message);
+    }
+
+}
+~~~
+
+日志输出
+
+~~~shell
+2020-10-06 23:47:45.579  INFO 22521 --- [ntContainer#0-1] c.l.h.r.s.topic.consumer.TopicConsumer   : topic 2 {"exchangeName":"spring-topic-ex","key":"spring-topic","routingKey":"rabbit.laoshiren.1207"}
+2020-10-06 23:47:45.579  INFO 22521 --- [ntContainer#1-1] c.l.h.r.s.topic.consumer.TopicConsumer   : topic 1 {"exchangeName":"spring-topic-ex","key":"spring-topic","routingKey":"rabbit.laoshiren.1207"}
+~~~
+

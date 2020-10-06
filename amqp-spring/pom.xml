@@ -22,6 +22,8 @@
         <module>spring-publish-subscribe</module>
         <!-- 路由模式 routing -->
         <module>spring-routing</module>
+        <!-- topic 模式 -->
+        <module> spring-topic </module>
     </modules>
 
 </project>
