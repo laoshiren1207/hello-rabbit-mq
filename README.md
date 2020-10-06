@@ -434,6 +434,8 @@ spring:
 
 ##### provider
 
+消息生产者**不会主动创建队列**，只有消费者才会创建队列。
+
 ~~~java
 @Resource
 private RabbitTemplate rabbitTemplate;
@@ -447,7 +449,7 @@ public void runEmpty() throws Exception {
     map.put("key","spring-hello-world");
     map.put("queueName",queueName);
     String jsonStr = objectMapper.writeValueAsString(map);
-    // 向队列发送消息 消息生产者不会主动创建队列，只有有了消费者才会创建队列
+    // 向队列发送消息 
     // 1 队列名
     // 2 消息体
     rabbitTemplate.convertAndSend(queueName,jsonStr);
@@ -455,6 +457,8 @@ public void runEmpty() throws Exception {
 ~~~
 
 ##### consumer
+
+默认创建的就是持久化非独占的队列。
 
 ~~~java
 @Component
