@@ -38,6 +38,8 @@
         <module>amqp-routing</module>
         <!-- topic 模式 -->
         <module>amqp-topics</module>
+        <!--整合springboot-->
+        <module>amqp-spring</module>
     </modules>
 
     <properties>

@@ -391,3 +391,95 @@ channel.basicConsume(queueName,true,new DefaultConsumer(channel){
 
 ## 4 Spring AMQP
 
+### 4.1 spring-hello-world
+
+我们使用测试用例作为生产，`main`代码里作为消息消费者。第一步引入依赖。
+
+~~~xml
+<properties>
+    <rabbit-amqp-client.version>5.9.0</rabbit-amqp-client.version>
+</properties>
+<dependencies>
+    <!-- spring boot -->
+    <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-web</artifactId>
+    </dependency>
+    <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-test</artifactId>
+        <scope>test</scope>
+    </dependency>
+
+    <!-- rabbit-mq start -->
+    <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-amqp</artifactId>
+    </dependency>
+<dependencies>
+~~~
+
+配置文件
+
+~~~yaml
+spring:
+  ## rabbit mq 基本设置
+  rabbitmq:
+    addresses: 120.79.0.210
+    port: 5672
+    username: rabbit
+    password: 123456
+    virtual-host: /
+~~~
+
+##### provider
+
+~~~java
+@Resource
+private RabbitTemplate rabbitTemplate;
+@Resource
+private ObjectMapper objectMapper;
+
+@Test
+public void runEmpty() throws Exception {
+    String queueName = "amqp-spring-hello";
+    Map<String,Object> map = new HashMap<>();
+    map.put("key","spring-hello-world");
+    map.put("queueName",queueName);
+    String jsonStr = objectMapper.writeValueAsString(map);
+    // 向队列发送消息 消息生产者不会主动创建队列，只有有了消费者才会创建队列
+    // 1 队列名
+    // 2 消息体
+    rabbitTemplate.convertAndSend(queueName,jsonStr);
+}
+~~~
+
+##### consumer
+
+~~~java
+@Component
+// 消费者监听
+// queuesToDeclare 定义队列
+// @Queue 队列
+// 默认创建的就是 持久化非独占的队列
+@RabbitListener(queuesToDeclare = {@Queue(name = "amqp-spring-hello",durable = "true")})
+@Slf4j
+public class HelloWorldConsumer {
+
+    /*
+     * 可以定义任意方法，但是只有一个方法能被@RabbitHandler修饰，不然就会报 no match 的异常
+     */
+
+    /**
+     * 接收消息的方法
+     * @Annotation @RabbitHandler 表示mq消费者消费方法
+     * @param message   消息体
+     */
+    @RabbitHandler
+    public void receiveMessage(String message){
+        log.info("queue: amqp-spring-hello  message {}",message);
+    }
+
+}
+~~~
+
