@@ -323,7 +323,71 @@ channel.basicConsume(queueName,true,new DefaultConsumer(channel){
 
 ### 3.5 动态路由 topic
 
+`topic`模式又称为动态路由，他是基于路由的基础之上演化来的。代替使用仅能进行虚拟广播的`fanout`交换机，我们使用`direct`交换机，并有选择地接收消息。但是它仍然存在局限性-它不能基于多个条件进行路由。`Topic`类型的`Exchange`可以让队列在绑定`RoutingKey`的使用使用通配符。这种一般都是由一个或者多个单词组成，多个单词以`.`的形式分隔。
+
+![](https://www.rabbitmq.com/img/tutorials/python-five.png)
+
+- *（星号）可以代替一个单词。
+- ＃（哈希）可以替代零个或多个单词。
+
+
 #### provider
 
+~~~java
+Connection connection = RabbitUtils.openConnection();
+// 获取通道
+Channel channel = connection.createChannel();
+String exchangeName = "topic-ex";
+// 声明一个topic类型的交换机
+channel.exchangeDeclare(exchangeName, BuiltinExchangeType.TOPIC,true);
+// 声明消息体
+String routingKey = "rabbit.laoshiren.topic";
+Map<String,Object> map = new HashMap<>();
+map.put("routing key",routingKey);
+map.put("exchange", exchangeName);
+String jsonStr = objectMapper.writeValueAsString(map);
+// 向topic交换机发送消息
+channel.basicPublish(exchangeName,routingKey,null,jsonStr.getBytes());
+~~~
+
 #### consumer
+
+~~~java
+// 声明通道
+Channel channel = connection.createChannel();
+// 声明交换机
+String exchangeName = "topic-ex";
+channel.exchangeDeclare(exchangeName, BuiltinExchangeType.TOPIC,true);
+// 声明队列并绑定
+String queueName = channel.queueDeclare().getQueue();
+channel.queueBind(queueName,exchangeName,"*.laoshiren.*",null);
+// 消费消息
+channel.basicConsume(queueName,true,new DefaultConsumer(channel){
+    @Override
+    public void handleDelivery(String consumerTag,
+                               Envelope envelope,
+                               AMQP.BasicProperties properties,
+                               byte[] body) throws IOException
+    {
+        System.out.print("topic-consumer1 "+ envelope.getExchange()+" routing key "+envelope.getRoutingKey()+" ");
+        System.out.println(new String(body));
+    }
+});
+~~~
+> Topic exchange is powerful and can behave like other exchanges.
+>
+> Topic 类型的交换机是一个强大的可以像其他交换机一样功能的交换机
+>
+> When a queue is bound with "#" (hash) binding key - it will receive all the messages, regardless of the routing key - like in fanout exchange.
+>
+> 当一个队列被`#`hash 绑定，他就会和`fanout`交换机一样，接收所有消息和`routing key`无关
+>
+> When special characters, "*" (star) and "#" (hash), aren't used in bindings, the topic exchange will behave just like a direct one.
+>
+> 当他不使用任何通配符，`topic`交换机又像`direct`交换机一样。
+>
+> ​																																RabbitMQ 官网
+
+
+## 4 Spring AMQP
 
