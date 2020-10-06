@@ -115,7 +115,7 @@ connection.close();
 Connection connection = factory.newConnection();
 // 创建通道
 Channel channel = connection.createChannel();
-// 必须和发送端一直，不然就会新建一个channel
+// 必须和发送端一致，不然就会新建一个channel
 channel.queueDeclare("amqp-hello-queue",true,false,false,null);
 // 1 待消费的队列名称
 // 2 开始消息的自动确认机制
@@ -489,6 +489,8 @@ public class HelloWorldConsumer {
 
 ### 4.2 spring-work-queues
 
+依赖和配置文件其实是和`spring-hello-world`一致的。
+
 #### provider
 
 #### consumer
@@ -532,3 +534,72 @@ public class WorkConsumer {
 2020-10-06 22:24:14.297  INFO 20066 --- [ntContainer#0-1] c.l.h.r.s.work.consumer.WorkConsumer     : work1 {"value":12,"key":"spring-work-queue"}
 ~~~
 
+**能者多劳模式**
+
+### 4.3 spring-publish-subscribe
+
+依赖和配置文件其实是和`spring-hello-world`一致的。
+
+#### provider
+
+~~~java
+@Test
+public void runEmpty() throws Exception{
+    String exchangeName = "spring-fanout-ex";
+    Map<String,Object> map = new HashMap<>();
+    map.put("key","spring-Publish-Subscribe");
+    map.put("exchangeName",exchangeName);
+    String jsonStr = objectMapper.writeValueAsString(map);
+    // 1 交换机名称
+    // 2 路由key 发布订阅者 无须设置路由key
+    // 3 消息体
+    rabbitTemplate.convertAndSend(exchangeName,"",jsonStr);
+}
+~~~
+
+#### consumer
+
+~~~java
+public class FanoutConsumer {
+    /*
+     * 此处声明多个消费者
+     */
+
+    @RabbitListener(
+            // 绑定
+            bindings = {@QueueBinding(
+                    // 创建临时队列
+                    value = @Queue(""),
+                    // 配置交换机
+                    exchange = @Exchange(name = "spring-fanout-ex",type = ExchangeTypes.FANOUT))
+            })
+    public void receiveMessageFanout1(String message){
+        log.info("fanout1 -- {}",message);
+    }
+
+    @RabbitListener(bindings = {@QueueBinding(
+                    value = @Queue(""),
+                    exchange = @Exchange(name = "spring-fanout-ex",type = ExchangeTypes.FANOUT))})
+    public void receiveMessageFanout2(String message){
+        log.info("fanout2 -- {}",message);
+    }
+
+}
+~~~
+
+日志输出
+
+~~~shell
+2020-10-06 22:55:07.797  INFO 20911 --- [ntContainer#0-1] c.l.h.r.s.p.consumer.FanoutConsumer      : fanout1 -- {"exchangeName":"spring-fanout-ex","key":"spring-Publish-Subscribe"}
+2020-10-06 22:55:07.797  INFO 20911 --- [ntContainer#1-1] c.l.h.r.s.p.consumer.FanoutConsumer      : fanout2 -- {"exchangeName":"spring-fanout-ex","key":"spring-Publish-Subscribe"}
+~~~
+
+### 4.4 spring-routing
+
+依赖和配置文件其实是和`spring-hello-world`一致的。
+
+#### provider
+
+
+
+#### consumer

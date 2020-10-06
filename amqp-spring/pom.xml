@@ -18,6 +18,8 @@
         <module>spring-hello-world</module>
         <!-- work-queues 模式 -->
         <module>spring-work-queues</module>
+        <!-- 发布订阅者模式 fanout 模式 -->
+        <module>spring-publish-subscribe</module>
     </modules>
 
 </project>
