@@ -28,6 +28,8 @@
         <module>spring-rpc</module>
         <!-- amqp ttl 模式 -->
         <module>spring-ttl</module>
+        <!-- amqp 分布式事务 模式-->
+        <module>spring-distributed-tx</module>
     </modules>
 
 </project>
