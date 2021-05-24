@@ -5,7 +5,7 @@
 
     <parent>
         <groupId>com.laoshiren.hello.rabbit</groupId>
-        <artifactId>hello-rabbit-mq</artifactId>
+        <artifactId>amqp-java</artifactId>
         <version>0.0.1-SNAPSHOT</version>
     </parent>
 

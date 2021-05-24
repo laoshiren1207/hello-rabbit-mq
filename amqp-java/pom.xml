@@ -9,13 +9,21 @@
         <version>0.0.1-SNAPSHOT</version>
     </parent>
 
-    <artifactId>amqp-publish-subscribe</artifactId>
+    <artifactId>amqp-java</artifactId>
 
     <packaging>pom</packaging>
 
     <modules>
-        <module>provider-publish-subscribe</module>
-        <module>consumer-publish-subscribe</module>
+        <!-- hello-world -->
+        <module>amqp-hello-world</module>
+        <!-- work-queues 模式 -->
+        <module>amqp-work-queues</module>
+        <!-- 发布订阅者模式 fanout 模式 -->
+        <module>amqp-publish-subscribe</module>
+        <!-- 路由模式 routing -->
+        <module>amqp-routing</module>
+        <!-- topic 模式 -->
+        <module>amqp-topics</module>
     </modules>
 
 </project>

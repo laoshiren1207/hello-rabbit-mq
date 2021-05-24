@@ -5,17 +5,17 @@
 
     <parent>
         <groupId>com.laoshiren.hello.rabbit</groupId>
-        <artifactId>hello-rabbit-mq</artifactId>
+        <artifactId>amqp-java</artifactId>
         <version>0.0.1-SNAPSHOT</version>
     </parent>
 
-    <artifactId>amqp-topics</artifactId>
+    <artifactId>amqp-hello-world</artifactId>
 
     <packaging>pom</packaging>
 
     <modules>
-        <module>provider-topics-queues</module>
-        <module>consumer-topics-queues</module>
+        <module>provider-hello-world</module>
+        <module>consumer-hello-world</module>
     </modules>
 
 </project>
