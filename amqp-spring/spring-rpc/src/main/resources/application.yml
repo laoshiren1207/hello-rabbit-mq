@@ -1,7 +1,7 @@
 
 spring:
   application:
-    name: spring-ttl
+    name: spring-rpc
   ## rabbit mq 基本设置
   rabbitmq:
     addresses: 192.168.8.190
