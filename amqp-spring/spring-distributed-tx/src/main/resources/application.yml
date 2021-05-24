@@ -1,0 +1,12 @@
+spring:
+  application:
+    name: spring-distributed-tx
+  ## rabbit mq 基本设置
+  rabbitmq:
+    addresses: 192.168.8.190
+    port: 5672
+    username: admin
+    password: admin
+    virtual-host: /
+server:
+  port: 18080
