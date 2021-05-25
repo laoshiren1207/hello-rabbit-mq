@@ -9,7 +9,7 @@
         <version>0.0.1-SNAPSHOT</version>
     </parent>
 
-    <artifactId>spring-ttl</artifactId>
+    <artifactId>spring-delay</artifactId>
 
     <packaging>jar</packaging>
 

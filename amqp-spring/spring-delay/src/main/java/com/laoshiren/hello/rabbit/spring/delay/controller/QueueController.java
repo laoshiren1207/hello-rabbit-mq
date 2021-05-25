@@ -1,19 +1,18 @@
-package com.laoshiren.hello.rabbit.spring.ttl.controller;
+package com.laoshiren.hello.rabbit.spring.delay.controller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.laoshiren.hello.rabbit.spring.ttl.queue.DelayQueueConstant;
-import jdk.nashorn.internal.objects.annotations.Getter;
+import com.laoshiren.hello.rabbit.commons.json.JsonUtils;
+import com.laoshiren.hello.rabbit.spring.delay.queue.DelayQueueConstant;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.core.MessageDeliveryMode;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -37,13 +36,13 @@ public class QueueController {
     @Resource
     private ObjectMapper objectMapper;
 
-    @GetMapping("/delay")
-    public ResponseEntity<Map<String,String>> send() throws JsonProcessingException {
+    @GetMapping("/delay/{routingKey}")
+    public ResponseEntity<Map<String,String>> send( @PathVariable(name = "routingKey") String routingKey ){
         log.info(" - ");
         Map<String,String> map = new LinkedHashMap<>();
         map.put("delay","queue");
-        String json = objectMapper.writeValueAsString(map);
-        rabbitTemplate.convertAndSend(DelayQueueConstant.exchangeName, DelayQueueConstant.routingKey, json, messagePostProcessor->{
+        String json = JsonUtils.obj2json(map);
+        rabbitTemplate.convertAndSend(DelayQueueConstant.exchangeName,routingKey , json, messagePostProcessor->{
             messagePostProcessor.getMessageProperties()
                     .setDeliveryMode(MessageDeliveryMode.PERSISTENT);
             messagePostProcessor.getMessageProperties()

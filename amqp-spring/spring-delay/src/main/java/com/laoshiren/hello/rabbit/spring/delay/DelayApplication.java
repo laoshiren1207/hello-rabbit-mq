@@ -6,7 +6,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 /**
  * ProjectName:     hello-rabbit-mq
  * Package:         com.laoshiren.hello.rabbit.spring.ttl
- * ClassName:       TtlApplication
+ * ClassName:       DelayApplication
  * Author:          laoshiren
  * Git:             xiangdehua@pharmakeyring.com
  * Description:
@@ -14,10 +14,10 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
  * Version:         1.0.0
  */
 @SpringBootApplication
-public class TtlApplication {
+public class DelayApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(TtlApplication.class,args);
+        SpringApplication.run(DelayApplication.class,args);
     }
 
 }

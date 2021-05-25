@@ -1,5 +1,4 @@
-package com.laoshiren.hello.rabbit.spring.ttl.queue;
-
+package com.laoshiren.hello.rabbit.spring.delay.queue;
 
 import org.springframework.amqp.core.*;
 import org.springframework.context.annotation.Bean;
@@ -29,7 +28,7 @@ public class DelayQueueBinding {
     // 定义广播模式的延时交换机 无需绑定路由
     @Bean
     public DirectExchange delayExchange(){
-        Map<String, Object> args = new HashMap<String, Object>();
+        Map<String, Object> args = new HashMap<>();
         args.put("x-delayed-type", "direct");
         DirectExchange directExchange = new DirectExchange(DelayQueueConstant.exchangeName, true, false, args);
         directExchange.setDelayed(true);

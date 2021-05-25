@@ -1,4 +1,4 @@
-package com.laoshiren.hello.rabbit.spring.ttl.queue;
+package com.laoshiren.hello.rabbit.spring.delay.queue;
 
 /**
  * ProjectName:     hello-rabbit-mq
