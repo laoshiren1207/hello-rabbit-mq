@@ -16,6 +16,6 @@ public interface DelayQueueConstant {
 
     String exchangeName = "delay_exchange_name";
 
-    String routingKey = "delay";
+    String routingKey = "ttl";
 
 }
