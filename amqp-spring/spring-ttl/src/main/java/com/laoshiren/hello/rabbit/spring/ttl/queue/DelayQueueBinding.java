@@ -1,10 +1,7 @@
 package com.laoshiren.hello.rabbit.spring.ttl.queue;
 
 
-import org.springframework.amqp.core.Binding;
-import org.springframework.amqp.core.BindingBuilder;
-import org.springframework.amqp.core.FanoutExchange;
-import org.springframework.amqp.core.Queue;
+import org.springframework.amqp.core.*;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -31,18 +28,18 @@ public class DelayQueueBinding {
 
     // 定义广播模式的延时交换机 无需绑定路由
     @Bean
-    FanoutExchange delayExchange(){
+    public DirectExchange delayExchange(){
         Map<String, Object> args = new HashMap<String, Object>();
         args.put("x-delayed-type", "direct");
-        FanoutExchange topicExchange = new FanoutExchange(DelayQueueConstant.exchangeName, true, false, args);
-        topicExchange.setDelayed(true);
-        return topicExchange;
+        DirectExchange directExchange = new DirectExchange(DelayQueueConstant.exchangeName, true, false, args);
+        directExchange.setDelayed(true);
+        return directExchange;
     }
 
     // 绑定延时队列与交换机
     @Bean
     public Binding delayPayBind() {
-        return BindingBuilder.bind(delayPayQueue()).to(delayExchange());
+        return BindingBuilder.bind(delayPayQueue()).to(delayExchange()).with("ttl");
     }
 
 }
