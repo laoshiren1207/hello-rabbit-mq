@@ -5,11 +5,11 @@
 
     <parent>
         <groupId>com.laoshiren.hello.rabbit</groupId>
-        <artifactId>amqp-spring</artifactId>
+        <artifactId>amqp-distributed-tx-amqp</artifactId>
         <version>0.0.1-SNAPSHOT</version>
     </parent>
 
-    <artifactId>spring-distributed-tx</artifactId>
+    <artifactId>spring-amqp-sku</artifactId>
 
     <packaging>jar</packaging>
 
@@ -43,6 +43,7 @@
         </dependency>
 
     </dependencies>
+
 
 
 </project>

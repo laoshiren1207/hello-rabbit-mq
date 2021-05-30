@@ -29,7 +29,7 @@
         <!-- amqp ttl 模式 -->
         <module>spring-delay</module>
         <!-- amqp 分布式事务 模式-->
-        <module>spring-distributed-tx</module>
+        <module>spring-distributed-tx-amqp</module>
     </modules>
 
 </project>
