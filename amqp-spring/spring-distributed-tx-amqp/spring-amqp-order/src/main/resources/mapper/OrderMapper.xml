@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.laoshiren.hello.rabbit.tx.amqp.order.mapper.OrderMapper">
+  <resultMap id="BaseResultMap" type="com.laoshiren.hello.rabbit.tx.amqp.order.domain.Order">
+    <!--@mbg.generated-->
+    <!--@Table `order`-->
+    <id column="order_id" jdbcType="INTEGER" property="orderId" />
+    <result column="order_no" jdbcType="VARCHAR" property="orderNo" />
+    <result column="sku_code" jdbcType="VARCHAR" property="skuCode" />
+    <result column="sku_name" jdbcType="VARCHAR" property="skuName" />
+    <result column="sku_quantity" jdbcType="INTEGER" property="skuQuantity" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    <!--@mbg.generated-->
+    order_id, order_no, sku_code, sku_name, sku_quantity
+  </sql>
+</mapper>

@@ -1,0 +1,21 @@
+server:
+  port: 15000
+
+spring:
+  application:
+    name: amqp-order
+  datasource:
+    type: com.zaxxer.hikari.HikariDataSource
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://120.79.0.210:3306/amqp_tx?useUnicode=true&characterEncoding=utf-8&useSSL=false
+    username: root
+    password: 12345678
+    hikari:
+      minimum-idle: 1
+      idle-timeout: 600000
+      maximum-pool-size: 5
+      auto-commit: true
+      pool-name: MyHikariCP
+      max-lifetime: 1800000
+      connection-timeout: 30000
+      connection-test-query: SELECT 1

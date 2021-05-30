@@ -5,9 +5,10 @@
 
     <parent>
         <groupId>com.laoshiren.hello.rabbit</groupId>
-        <artifactId>amqp-distributed-tx-amqp</artifactId>
+        <artifactId>spring-distributed-tx-amqp</artifactId>
         <version>0.0.1-SNAPSHOT</version>
     </parent>
+
 
     <artifactId>spring-amqp-sku</artifactId>
 
@@ -42,7 +43,35 @@
             <version>${project.version}</version>
         </dependency>
 
+        <dependency>
+            <groupId>com.baomidou</groupId>
+            <artifactId>mybatis-plus-boot-starter</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.zaxxer</groupId>
+            <artifactId>HikariCP</artifactId>
+        </dependency>
+
+
     </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <configuration>
+                    <mainClass>com.laoshiren.hello.rabbit.tx.amqp.order.SkuApplication</mainClass>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 
 
 
